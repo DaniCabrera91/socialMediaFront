@@ -1,10 +1,13 @@
-import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux';
 
 const Profile = () => {
-  const { user } = useSelector((state) => state.auth)
 
+  const { user } = useSelector((state) => state.auth);
+  console.log('Contenido del usuario en perfil',user);
+
+  
   if (!user) {
-    return <p>Loading...</p> // Puedes mostrar un mensaje de carga o un spinner
+    return <p>Loading...</p>;
   }
 
   return (
@@ -12,11 +15,11 @@ const Profile = () => {
       <h1>Profile</h1>
       <p>{user.firstName}</p>
       <p>{user.email}</p>
-      {user.user_img && (
-        <img src={`http://localhost:3000/${user.user_img}`} alt={user.firstName} />
+      {user.profileImageUrl && (
+        <img src={user.profileImageUrl} alt={user.firstName} style={{ width: '200px', height: '200px', objectFit: 'cover' }} />
       )}
     </>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

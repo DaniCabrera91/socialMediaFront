@@ -1,22 +1,32 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../../redux/auth/authSlice'
+// src/components/TheHeader.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/auth/authSlice';
+import PostCreate from '../Posts/PostCreate';
+
 const TheHeader = () => {
- const navigate = useNavigate()
- const dispatch = useDispatch()
- const { user } = useSelector((state) => state.auth)
- const onLogout = (e) => {
-   e.preventDefault()
-   dispatch(logout())
-   navigate('/login')
- }
- return (
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+
+  const onLogout = (e) => {
+    e.preventDefault();
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  return (
     <nav>
-      <h1>header</h1>
+      <Link to="/">Home</Link>
       {user ? (
         <>
+          <button onClick={() => setShowCreatePost(!showCreatePost)}>
+            {showCreatePost ? 'Cancelar' : 'Crear Post'}
+          </button>
+          {showCreatePost && <PostCreate onClose={() => setShowCreatePost(false)} />}
           <button onClick={onLogout}>Logout</button>
-          <Link to="/">Home</Link>
           <Link to="/profile">Profile | {user.name}</Link>
         </>
       ) : (
@@ -26,6 +36,7 @@ const TheHeader = () => {
         </>
       )}
     </nav>
-  )
- }
-export default TheHeader
+  );
+};
+
+export default TheHeader;

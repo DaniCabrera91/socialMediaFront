@@ -22,9 +22,8 @@ const Login = () => {
             }, 2000)
         }
 
-        // Limpia los mensajes después de que se muestre la notificación
         return () => {
-            dispatch(reset())  // Esto limpia el estado solo al desmontar el componente
+            dispatch(reset())
         }
     }, [isError, isSuccess, message, user, navigate, dispatch])
 
@@ -56,6 +55,7 @@ const Login = () => {
                 onChange={onChange}
                 placeholder="Email"
                 required
+                autoComplete='off'
             />
             <input 
                 type="password" 
@@ -64,6 +64,7 @@ const Login = () => {
                 onChange={onChange}
                 placeholder="Password"
                 required
+                autoComplete='off'
             />
             <button type="submit">Login</button>
         </form>
