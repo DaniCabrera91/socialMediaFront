@@ -1,4 +1,3 @@
-// src/components/TheHeader.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,9 +16,25 @@ const TheHeader = () => {
     navigate('/login');
   };
 
+  const [text, setText] = useState('')
+
+  const handleChange = (e) => {
+    setText(e.target.value);
+    if (e.key === 'Enter') {
+      navigate(`/search/${encodeURIComponent(e.target.value)}`)
+    }
+  }
+ 
+
   return (
     <nav>
       <Link to="/">Home</Link>
+      <input 
+        onKeyUp={handleChange}
+        placeholder="search post"
+        name="text"
+      />
+
       {user ? (
         <>
           <button onClick={() => setShowCreatePost(!showCreatePost)}>

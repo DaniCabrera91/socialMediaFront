@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { createPost } from '../../redux/posts/postsSlice';
 import { notification } from 'antd';
@@ -11,67 +10,45 @@ const PostCreate = () => {
     body: '',
     image: null,
   });
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState(""); // Para mostrar errores
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState("")
 
   const onChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files } = e.target
     if (name === 'image') {
-      setFormData((prevState) => ({ ...prevState, image: files[0] }));
+      setFormData((prevState) => ({ ...prevState, image: files[0] }))
     } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+      setFormData((prevState) => ({ ...prevState, [name]: value }))
     }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    
-    let imageUrl = '';
-  
-    // Solo sube la imagen si el usuario ha seleccionado una
-    if (formData.image) {
-      const uploadData = new FormData(); // Crea una nueva instancia de FormData
-      uploadData.append('file', formData.image);
-      uploadData.append('upload_preset', 'Social_Media_Project'); // Asegúrate de que esto es correcto
-      uploadData.append('cloud_name', 'dyt3uvyo7'); // Puedes eliminar esto si no es necesario para Cloudinary
-
-      try {
-        const response = await axios.post('https://api.cloudinary.com/v1_1/dyt3uvyo7/image/upload', uploadData);
-        imageUrl = response.data.secure_url;
-      } catch (error) {
-        notification.error({
-          message: 'Error',
-          description: 'Failed to upload image',
-        });
-        return;
-      }
-    }
+    const postData = new FormData();
+    postData.append('title', formData.title)
+    postData.append('body', formData.body)
+    if (formData.image) postData.append('image', formData.image)
   
     try {
-      const postData = imageUrl ? { title: formData.title, body: formData.body, imageUrl } : { title: formData.title, body: formData.body };
-      const result = await dispatch(createPost(postData));
-      
+      const result = await dispatch(createPost(postData))
       if (createPost.fulfilled.match(result)) {
         notification.success({
-          message: 'Success',
-          description: 'Post created successfully',
+          message: 'Éxito',
+          description: 'Post creado exitosamente',
         });
         navigate('/');
       } else {
-        throw new Error('Failed to create post');
+        throw new Error('Error al crear el post')
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setErrorMessage("Debes estar autenticado para crear un post.");
-      } else {
-        notification.error({
-          message: 'Error',
-          description: error.message || 'Failed to create post',
-        });
-      }
+      notification.error({
+        message: 'Error',
+        description: error.message || 'Error al crear el post',
+      })
+      setErrorMessage(error.message)
     }
-  };
+  }
 
   return (
     <div>
@@ -101,7 +78,7 @@ const PostCreate = () => {
       </form>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </div>
-  );
-};
+  )
+}
 
-export default PostCreate;
+export default PostCreate

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, reset } from '../../redux/auth/authSlice';
 import { notification } from 'antd';
-import axios from 'axios';
 
 const Register = () => {
   const [formData, setFormData] = useState({ 

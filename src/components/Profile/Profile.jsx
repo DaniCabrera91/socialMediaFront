@@ -3,8 +3,6 @@ import { useSelector } from 'react-redux';
 const Profile = () => {
 
   const { user } = useSelector((state) => state.auth);
-  console.log('Contenido del usuario en perfil',user);
-
   
   if (!user) {
     return <p>Loading...</p>;

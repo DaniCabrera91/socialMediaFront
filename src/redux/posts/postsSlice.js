@@ -1,4 +1,3 @@
-// src/redux/posts/postsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import postsService from "./postsService";
 
@@ -10,36 +9,16 @@ const initialState = {
 };
 
 export const getAll = createAsyncThunk("posts/getAll", async () => {
-  try {
-    return await postsService.getAll();
-  } catch (error) {
-    console.error(error);
-  }
+  return await postsService.getAll();
 });
 
 export const getById = createAsyncThunk("posts/getById", async (id) => {
-  try {
-    return await postsService.getById(id);
-  } catch (error) {
-    console.error(error);
-  }
+  return await postsService.getById(id);
 });
 
 export const createPost = createAsyncThunk("posts/create", async (postData) => {
-  try {
-    return await postsService.create(postData);
-  } catch (error) {
-    console.error('Error al crear post:', error.response ? error.response.data : error.message);
-    throw error; // Para manejar el error en el componente
-  }
-});
-
-export const updatePost = createAsyncThunk("posts/update", async ({ id, postData }) => {
-  try {
-    return await postsService.update(id, postData);
-  } catch (error) {
-    console.error(error);
-  }
+  const response = await postsService.create(postData);
+  return response; // Aquí ahora será el post creado directamente
 });
 
 export const postsSlice = createSlice({
@@ -48,36 +27,35 @@ export const postsSlice = createSlice({
   reducers: {
     reset: (state) => {
       state.isLoading = false;
+      state.error = null; // Resetear el error también
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(getAll.fulfilled, (state, action) => {
         state.posts = action.payload;
+        state.isLoading = false; // Finalizar carga
       })
       .addCase(getAll.pending, (state) => {
         state.isLoading = true;
+      })
+      .addCase(getAll.rejected, (state, action) => {
+        state.isLoading = false; // Finalizar carga
+        state.error = action.error.message; // Capturar error
       })
       .addCase(getById.fulfilled, (state, action) => {
         state.post = action.payload;
       })
       .addCase(createPost.fulfilled, (state, action) => {
-        console.log('Post created:', action.payload); // Verifica el payload aquí
-        if (action.payload._id) {
+        if (action.payload && action.payload._id) {
           state.posts.push(action.payload);
         } else {
-          console.error('Post created without _id:', action.payload);
+          console.error('Post creado sin _id:', action.payload);
         }
       })
       .addCase(createPost.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.error.message; // Capturar error
       })
-      .addCase(updatePost.fulfilled, (state, action) => {
-        state.posts = state.posts.map(post => post._id === action.payload._id ? action.payload : post);
-      })
-      .addCase(updatePost.rejected, (state, action) => {
-        state.error = action.error.message;
-      });
   },
 });
 

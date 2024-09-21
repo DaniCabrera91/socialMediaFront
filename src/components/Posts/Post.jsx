@@ -1,12 +1,17 @@
-// src/components/Post.jsx
 import React from 'react';
 
 const Post = ({ post }) => {
   return (
-    <div>
+    <div className="post">
       <h2>{post.title}</h2>
       <p>{post.body}</p>
-      {post.imageUrl && <img src={post.imageUrl} alt={post.title} />}
+      <p>Creado por: {post.userId?.username}</p>
+      {post.imageUrl && (
+        <img
+          src={post.imageUrl}
+          alt={post.title}
+        />
+      )}
     </div>
   );
 };
