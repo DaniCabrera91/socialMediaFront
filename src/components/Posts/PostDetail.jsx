@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL
 
 const PostDetail = () => {
   const { _id } = useParams()
@@ -10,10 +10,10 @@ const PostDetail = () => {
     const fetchPost = async () => {
       const response = await fetch(`${API_URL}/posts/id/${_id}`)
       const data = await response.json()
-      setPost(data);
+      setPost(data)
     };
-    fetchPost();
-  }, [_id]);
+    fetchPost()
+  }, [_id])
 
   if (!post) {
     return <div>Cargando...</div>
@@ -23,7 +23,11 @@ const PostDetail = () => {
     <div>
       <h2>{post.title}</h2>
       <p>Creado por: {post.userId?.username}</p> 
-      <img src={post.imageUrl} alt={post.title} />
+      
+      {post.imageUrl ? (
+        <img src={post.imageUrl} alt={post.title} />
+      ) : null}
+
       <p>{post.body}</p>
     </div>
   )

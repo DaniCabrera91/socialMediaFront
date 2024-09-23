@@ -1,17 +1,16 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import Post from '../Posts/Post';
+import React from 'react'
+import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import Post from '../Posts/Post'
 
 const Search = () => {
-  const { postName } = useParams(); // Obtiene el parámetro de la URL
-  const { posts } = useSelector((state) => state.posts); // Obtiene los posts del estado de Redux
+  const { postName } = useParams()
+  const { posts } = useSelector((state) => state.posts)
 
-  // Filtra los posts según el nombre
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(postName.toLowerCase()) ||
     post.body.toLowerCase().includes(postName.toLowerCase())
-  );
+  )
 
   return (
     <div>
@@ -24,7 +23,7 @@ const Search = () => {
         <p>No se encontraron resultados.</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Search;
+export default Search

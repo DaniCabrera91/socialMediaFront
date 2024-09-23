@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Post = ({ post }) => {
   return (
@@ -13,7 +13,7 @@ const Post = ({ post }) => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Post;
+export default Post

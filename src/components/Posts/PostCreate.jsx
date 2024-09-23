@@ -10,28 +10,30 @@ const PostCreate = () => {
     body: '',
     image: null,
   });
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [errorMessage, setErrorMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onChange = (e) => {
-    const { name, value, files } = e.target
+    const { name, value, files } = e.target;
     if (name === 'image') {
-      setFormData((prevState) => ({ ...prevState, image: files[0] }))
+      setFormData((prevState) => ({ ...prevState, image: files[0] }));
     } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }))
+      setFormData((prevState) => ({ ...prevState, [name]: value }));
     }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const postData = new FormData();
-    postData.append('title', formData.title)
-    postData.append('body', formData.body)
-    if (formData.image) postData.append('image', formData.image)
-  
+    postData.append('title', formData.title);
+    postData.append('body', formData.body);
+
+    if (formData.image) postData.append('image', formData.image);
     try {
-      const result = await dispatch(createPost(postData))
+      const result = await dispatch(createPost(postData));
       if (createPost.fulfilled.match(result)) {
         notification.success({
           message: 'Éxito',
@@ -39,16 +41,18 @@ const PostCreate = () => {
         });
         navigate('/');
       } else {
-        throw new Error('Error al crear el post')
+        throw new Error('Error al crear el post');
       }
     } catch (error) {
       notification.error({
         message: 'Error',
         description: error.message || 'Error al crear el post',
-      })
-      setErrorMessage(error.message)
+      });
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -74,11 +78,13 @@ const PostCreate = () => {
           name="image"
           onChange={onChange}
         />
-        <button type="submit">Crear Post</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Cargando...' : 'Crear Post'}
+        </button>
       </form>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default PostCreate
+export default PostCreate;

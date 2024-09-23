@@ -1,11 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux'
 
 const Profile = () => {
 
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth)
   
   if (!user) {
-    return <p>Loading...</p>;
+    return <p>Loading...</p>
   }
 
   return (
@@ -14,10 +14,11 @@ const Profile = () => {
       <p>{user.firstName}</p>
       <p>{user.email}</p>
       {user.profileImageUrl && (
-        <img src={user.profileImageUrl} alt={user.firstName} style={{ width: '200px', height: '200px', objectFit: 'cover' }} />
+        <img src={user.profileImageUrl} alt={user.firstName} 
+        style={{ width: '200px', height: '200px', objectFit: 'cover' }} />
       )}
     </>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

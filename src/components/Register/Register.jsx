@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { register, reset } from '../../redux/auth/authSlice';
-import { notification } from 'antd';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { register, reset } from '../../redux/auth/authSlice'
+import { notification } from 'antd'
 
 const Register = () => {
   const [formData, setFormData] = useState({ 
@@ -11,64 +11,64 @@ const Register = () => {
     password: '', 
     password2: '',
     profileImage: null,
-  });
+  })
 
-  const { firstName, username, email, password, password2, profileImage } = formData;
+  const { firstName, username, email, password, password2, profileImage } = formData
   const dispatch = useDispatch();
-  const { isSuccess, message, isError } = useSelector((state) => state.auth);
+  const { isSuccess, message, isError } = useSelector((state) => state.auth)
 
   useEffect(() => {
     if (isSuccess) {
       notification.success({
         message: 'Success',
         description: message,
-      });
+      })
     }
     if (isError) {
-      notification.error({ message: 'Error', description: message });
+      notification.error({ message: 'Error', description: message })
     }
 
     return () => {
-      dispatch(reset());
+      dispatch(reset())
     }
-  }, [isSuccess, isError, message, dispatch]);
+  }, [isSuccess, isError, message, dispatch])
 
   const onChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files } = e.target
     if (name === 'profileImage') {
-      setFormData((prevState) => ({ ...prevState, profileImage: files[0] }));
+      setFormData((prevState) => ({ ...prevState, profileImage: files[0] }))
     } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+      setFormData((prevState) => ({ ...prevState, [name]: value }))
     }
-  };
+  }
 
   const onSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
   
     if (password !== password2) {
       return notification.error({
         message: 'Error',
         description: 'Passwords do not match',
-      });
+      })
     } else if (!firstName || !username || !email || !password || !password2) {
       return notification.error({
         message: 'Error',
         description: 'All fields are required',
-      });
+      })
     } else {
-      const formData = new FormData();
-      formData.append('firstName', firstName);
-      formData.append('username', username);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('password2', password2);
+      const formData = new FormData()
+      formData.append('firstName', firstName)
+      formData.append('username', username)
+      formData.append('email', email)
+      formData.append('password', password)
+      formData.append('password2', password2)
       if (profileImage) {
-        formData.append('profileImage', profileImage);
+        formData.append('profileImage', profileImage)
       }
   
-      dispatch(register(formData));
+      dispatch(register(formData))
     }
-  };
+  }
 
   const clearForm = () => {
     setFormData({
@@ -78,8 +78,8 @@ const Register = () => {
       password: '',
       password2: '',
       profileImage: null,
-    });
-  };
+    })
+  }
 
   return (
     <form onSubmit={onSubmit}>
@@ -138,7 +138,7 @@ const Register = () => {
         <button type="button" onClick={clearForm}>Limpiar Formulario</button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register
