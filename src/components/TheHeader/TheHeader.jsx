@@ -10,10 +10,15 @@ const TheHeader = () => {
   const { user } = useSelector((state) => state.auth)
   const [showCreatePost, setShowCreatePost] = useState(false)
 
-  const onLogout = (e) => {
-    e.preventDefault()
-    dispatch(logout())
-    navigate('/login')
+  const onLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(logout()).unwrap(); // Usar unwrap para manejar errores
+      navigate('/login');
+    } catch (error) {
+      console.error("Error durante el logout:", error);
+      // Aquí podrías mostrar un mensaje de error al usuario si es necesario
+    }
   }
 
   const [text, setText] = useState('')

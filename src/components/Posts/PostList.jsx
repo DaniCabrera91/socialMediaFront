@@ -1,8 +1,10 @@
-import { React, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAll } from '../../redux/posts/postsSlice'
-import Post from './Post'
 import { Link } from 'react-router-dom'
+import { Card } from 'antd'
+
+const { Meta } = Card;
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -32,13 +34,25 @@ const PostList = () => {
   if (error) return <p>Error: {error}</p>
 
   return (
-    <div>
+    <div className="post-list">
       {sortedPosts.map((post) => (
-        <div key={post._id}>
-          <Post post={post} />
+        <Card
+          key={post._id}
+          style={{ marginBottom: '20px' }}
+          cover={post.imageUrl && <img alt={post.title} src={post.imageUrl} />}
+        >
+          <Meta
+            title={post.title}
+            description={(
+              <>
+                <p>{post.body}</p>
+                <p><strong>Publicado por:</strong> {post.userId ? post.userId.username : 'Usuario Anónimo'}</p>
+              </>
+            )}
+          />
           <p>Publicado: {formatDate(post.createdAt)}</p>
-          <Link to={`/posts/id/${post._id}`}>Ver Detalles</Link> 
-        </div>
+          <Link to={`/posts/id/${post._id}`} >Ver Detalles</Link>
+        </Card>
       ))}
     </div>
   )
