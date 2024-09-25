@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getById, likePost, updatePostLikes } from '../../redux/posts/postsSlice'; // Asegúrate de tener `unlikePost` aquí
+import { getById, likePost, updatePostLikes } from '../../redux/posts/postsSlice';
 import { useParams } from 'react-router-dom';
 import { Card, notification, Input, Button } from 'antd';
 import { HeartOutlined, HeartFilled, LikeOutlined, LikeFilled } from '@ant-design/icons';
@@ -15,16 +15,16 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const { post, isLoading, error } = useSelector((state) => state.posts);
   const { user } = useSelector((state) => state.auth);
-  const [likedPost, setLikedPost] = useState(false); // Estado para el like del post
-  const [likesCount, setLikesCount] = useState(0); // Estado para el conteo de likes
+  const [likedPost, setLikedPost] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
 
   useEffect(() => {
     const loadPostAndComments = async () => {
       try {
-        await dispatch(getById(_id)); // Carga el post
-        await fetchComments(); // Carga los comentarios
+        await dispatch(getById(_id));
+        await fetchComments();
       } catch (error) {
         console.error('Error al cargar el post o comentarios:', error);
         notification.error({ message: 'Error al cargar datos', description: error.message });
@@ -35,16 +35,16 @@ const PostDetail = () => {
 
   useEffect(() => {
     if (post && post.likes) {
-      const userHasLiked = post.likes.includes(user?._id); // Verifica si el usuario ha dado like al post
-      setLikedPost(userHasLiked); // Actualiza el estado
-      setLikesCount(post.likes.length); // Actualiza el conteo de likes en el estado
+      const userHasLiked = post.likes.includes(user?._id);
+      setLikedPost(userHasLiked);
+      setLikesCount(post.likes.length);
     }
   }, [post, user]);
 
   const fetchComments = async () => {
     try {
       const fetchedComments = await commentsService.getCommentsByPost(_id);
-      setComments(fetchedComments || []); // Asegúrate de que siempre sea un array
+      setComments(fetchedComments || []);
     } catch (error) {
       console.error('Error al cargar comentarios:', error);
       notification.error({ message: 'Error al cargar comentarios', description: error.message });
@@ -56,44 +56,29 @@ const PostDetail = () => {
       notification.warning({ message: 'Debes iniciar sesión para dar like' });
       return;
     }
-  
+
     try {
-      const isAlreadyLiked = post.likes?.includes(user._id); // Verifica si el post tiene likes del usuario
-  
-      // Actualiza localmente el array de likes antes de llamar a la API
+      const isAlreadyLiked = post.likes?.includes(user._id);
       const updatedLikes = isAlreadyLiked
-        ? post.likes.filter(id => id !== user._id) // Quitar like
-        : [...(post.likes || []), user._id]; // Dar like
-  
-      // Actualiza el post localmente en el estado global
-      dispatch(updatePostLikes({ ...post, likes: updatedLikes })); // Actualiza el estado con el nuevo array de likes
-  
-      // Actualiza el conteo de likes y el estado de like localmente sin recargar la página
-      setLikesCount(updatedLikes.length); // Actualiza el contador de likes
-      setLikedPost(!isAlreadyLiked); // Cambia el estado de likedPost
-  
-      // Llama a la API para hacer persistente el like en el servidor
-      if (isAlreadyLiked) {
-        await dispatch(likePost(post._id)).unwrap(); // Asegúrate de pasar solo el ID
-      } else {
-        await dispatch(likePost(post._id)).unwrap(); // Asegúrate de pasar solo el ID
-      }
-      
-      // Notificación de éxito
+        ? post.likes.filter(id => id !== user._id)
+        : [...(post.likes || []), user._id];
+
+      dispatch(updatePostLikes({ ...post, likes: updatedLikes }));
+      setLikesCount(updatedLikes.length);
+      setLikedPost(!isAlreadyLiked);
+
+      await dispatch(likePost(post._id)).unwrap();
+
       notification.success({
         message: `Has ${isAlreadyLiked ? 'quitado' : 'dado'} like al post`,
       });
-  
-      // Actualiza el estado del post después de hacer la llamada a la API
-      dispatch(getById(post._id)); // Vuelve a obtener el post para asegurarte de que esté actualizado
-  
+
+      dispatch(getById(post._id));
     } catch (error) {
       console.error('Error al dar/quitar like al post:', error);
       notification.error({ message: 'Error al dar/quitar like al post', description: error.message });
     }
   };
-  
-  
 
   const handleCommentSubmit = async () => {
     if (!commentText) {
@@ -102,24 +87,15 @@ const PostDetail = () => {
     }
 
     try {
-      const newComment = await commentsService.createComment({ comment: commentText, postId: _id });
-      setComments(prevComments => [...prevComments, newComment]); // Asegúrate de que los comentarios se agreguen correctamente
-      setCommentText('');
+      await commentsService.createComment({ comment: commentText, postId: _id });
+      setCommentText(''); // Limpiar el campo de texto del comentario
       notification.success({ message: 'Comentario agregado con éxito' });
+      
+      // Vuelve a cargar los comentarios para mostrar el nombre de usuario
+      await fetchComments();
     } catch (error) {
       console.error('Error al agregar comentario:', error);
       notification.error({ message: 'Error al agregar comentario', description: error.message });
-    }
-  };
-
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await commentsService.deleteComment(commentId);
-      setComments(prevComments => prevComments.filter(comment => comment._id !== commentId));
-      notification.success({ message: 'Comentario eliminado con éxito' });
-    } catch (error) {
-      console.error('Error al eliminar el comentario:', error);
-      notification.error({ message: 'Error al eliminar el comentario', description: error.message });
     }
   };
 
@@ -134,10 +110,10 @@ const PostDetail = () => {
         if (comment._id === commentId) {
           const hasLiked = comment.likes && comment.likes.includes(user._id);
           const updatedLikes = hasLiked
-            ? comment.likes.filter((userId) => userId !== user._id)  // Quitar like
-            : [...(comment.likes || []), user._id];  // Dar like
+            ? comment.likes.filter((userId) => userId !== user._id)
+            : [...(comment.likes || []), user._id];
 
-          return { ...comment, likes: updatedLikes };  // Devuelve el comentario con los likes actualizados
+          return { ...comment, likes: updatedLikes };
         }
         return comment;
       });
@@ -145,7 +121,7 @@ const PostDetail = () => {
       setComments(updatedComments);
 
       const action = updatedComments.find(comment => comment._id === commentId).likes.includes(user._id)
-        ? likeComment 
+        ? likeComment
         : unlikeComment;
 
       await dispatch(action(commentId)).unwrap();
@@ -175,7 +151,7 @@ const PostDetail = () => {
         <div>
           <Button onClick={handlePostLike}>
             {likedPost ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />} 
-            {likesCount} Likes {/* Usar el estado `likesCount` */}
+            {likesCount} Likes
           </Button>
         </div>
       </Card>
@@ -201,11 +177,6 @@ const PostDetail = () => {
                   {comment.likes && comment.likes.includes(user?._id) ? <LikeFilled style={{ color: 'blue' }} /> : <LikeOutlined />} 
                   {comment.likes ? comment.likes.length : 0} Likes
                 </Button>
-                {comment.userId && comment.userId._id === user?._id && (
-                  <Button onClick={() => handleDeleteComment(comment._id)} type="danger" style={{ marginLeft: 8 }}>
-                    Eliminar
-                  </Button>
-                )}
               </div>
             </Card>
           ))

@@ -11,7 +11,7 @@ const authHeader = () => {
 const createComment = async ({ comment, postId }) => {
   try {
     const res = await axios.post(`${API_URL}/comments/post/${postId}`, { comment }, { headers: authHeader() });
-    return res.data.comment;
+    return res.data.comment; // Asegúrate de que res.data.comment incluya el username
   } catch (error) {
     console.error('Error al crear comentario:', error.response ? error.response.data : error.message);
     throw error;
@@ -22,20 +22,9 @@ const createComment = async ({ comment, postId }) => {
 const getCommentsByPost = async (postId) => {
   try {
     const res = await axios.get(`${API_URL}/comments/post/${postId}`, { headers: authHeader() });
-    return res.data;
+    return res.data; // Asegúrate de que la respuesta contenga la estructura esperada
   } catch (error) {
     console.error('Error al obtener los comentarios:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
-
-// Contar comentarios por ID de post
-const getCommentsCountByPost = async (postId) => {
-  try {
-    const res = await axios.get(`${API_URL}/comments/count/${postId}`, { headers: authHeader() });
-    return res.data.count; // Asegúrate de que la respuesta de la API tenga esta estructura
-  } catch (error) {
-    console.error('Error al obtener el conteo de comentarios:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
@@ -75,7 +64,6 @@ const unlikeComment = async (commentId) => {
 const commentsService = {
   createComment,
   getCommentsByPost,
-  getCommentsCountByPost,
   deleteComment,
   likeComment,
   unlikeComment,

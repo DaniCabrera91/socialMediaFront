@@ -1,4 +1,3 @@
-// commentsSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import commentsService from './commentsService';
 
@@ -54,7 +53,7 @@ const commentsSlice = createSlice({
         state.comments = action.payload;
       })
       .addCase(createComment.fulfilled, (state, action) => {
-        state.comments.push(action.payload);
+        state.comments.push(action.payload); // Asegúrate de que el payload incluya el username
       })
       .addCase(likeComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
