@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAll, likePost, updatePostLikes } from '../../redux/posts/postsSlice';
 import { Link } from 'react-router-dom';
-import { Card, notification } from 'antd';
-import { HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { Card, notification, Button } from 'antd';
+import { HeartOutlined, HeartFilled, CommentOutlined } from '@ant-design/icons';
+import commentsService from '../../redux/comments/commentsService';
 
 const { Meta } = Card;
 
@@ -25,26 +26,43 @@ const PostList = () => {
   const dispatch = useDispatch();
   const { posts, isLoading, error } = useSelector((state) => state.posts);
   const { user } = useSelector((state) => state.auth);
+  const [commentsCount, setCommentsCount] = useState({});
 
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
+
+  // Obtener los comentarios más recientes al cargar los posts
+  useEffect(() => {
+    const fetchCommentsCount = async () => {
+      const countData = {};
+      for (const post of posts) {
+        try {
+          const count = await commentsService.getCommentsCountByPost(post._id);
+          countData[post._id] = count; // Almacena el recuento
+        } catch (error) {
+          console.error(`Error fetching comments count for post ${post._id}:`, error);
+          countData[post._id] = 0; // Si hay un error, establece el recuento en 0
+        }
+      }
+      setCommentsCount(countData);
+    };
+
+    if (posts.length) fetchCommentsCount();
+  }, [posts]);
 
   const handleLike = async (postId) => {
     if (user) {
       try {
         const post = posts.find(post => post._id === postId);
         const isAlreadyLiked = post.likes.includes(user._id);
-        
-        // Actualiza localmente el estado del like
+
         const updatedLikes = isAlreadyLiked
           ? post.likes.filter(id => id !== user._id)
           : [...post.likes, user._id];
 
-        // Actualiza el post en el estado local
         dispatch(updatePostLikes({ ...post, likes: updatedLikes }));
 
-        // Llama a la API para persistir el cambio
         const updatedPost = await dispatch(likePost(postId)).unwrap();
         notification.success({ message: updatedPost.message });
       } catch (err) {
@@ -60,8 +78,8 @@ const PostList = () => {
 
   return (
     <div className="post-list">
-      {[...posts] // Crea una copia del arreglo
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Ordenar de más recientes a más antiguos
+      {[...posts]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .map((post) => {
           const isAlreadyLiked = post.likes.includes(user?._id);
 
@@ -81,11 +99,13 @@ const PostList = () => {
               <Link to={`/posts/id/${post._id}`}>Ver Detalles</Link>
               <div>
                 {isAlreadyLiked ? (
-                  <HeartFilled onClick={() => handleLike(post._id)} style={{ color: 'red', cursor: 'pointer' }} />
+                <HeartFilled onClick={() => handleLike(post._id)} style={{ color: 'red', cursor: 'pointer' }} />
                 ) : (
-                  <HeartOutlined onClick={() => handleLike(post._id)} style={{ cursor: 'pointer' }} />
+                <HeartOutlined onClick={() => handleLike(post._id)} style={{ cursor: 'pointer' }} />
                 )}
                 <span style={{ marginLeft: '5px' }}>{post.likes.length}</span>
+                <CommentOutlined style={{ marginLeft: '10px', cursor: 'pointer' }} />
+                <span style={{ marginLeft: '5px' }}>{commentsCount[post._id] || 0}</span> {/* Muestra el recuento aquí */}
               </div>
             </Card>
           );

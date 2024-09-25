@@ -53,7 +53,7 @@ export const updatePost = createAsyncThunk('posts/updatePost', async ({ id, data
 // Eliminar un post
 export const deletePost = createAsyncThunk('posts/deletePost', async (postId, thunkAPI) => {
   try {
-    await postsService.deletePost(postId); // Asegúrate de usar deletePost, no delete
+    await postsService.deletePost(postId); // Asegúrate de usar deletePost
     return postId;
   } catch (error) {
     const message = error.response?.data?.error || error.message;
@@ -64,7 +64,7 @@ export const deletePost = createAsyncThunk('posts/deletePost', async (postId, th
 // Dar like a un post
 export const likePost = createAsyncThunk('posts/like', async (_id, thunkAPI) => {
   try {
-    return await postsService.like(_id);
+    return await postsService.like(_id); // Asegúrate de que _id es un string válido
   } catch (error) {
     const message = error.response?.data?.error || error.message;
     return thunkAPI.rejectWithValue(message);
@@ -136,9 +136,9 @@ const postsSlice = createSlice({
             likes: action.payload.likes,
           };
         }
-      });
+      })
   },
 });
 
-export const { reset, updatePostLikes } = postsSlice.actions; // Asegúrate de exportar updatePostLikes
+export const { reset, updatePostLikes } = postsSlice.actions;
 export default postsSlice.reducer;

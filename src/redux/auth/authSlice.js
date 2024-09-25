@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import authService from './authService';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const userStorage = JSON.parse(localStorage.getItem('user'));
 const tokenStorage = localStorage.getItem('token');
@@ -61,6 +62,15 @@ export const updateUser = createAsyncThunk(
     }
   }
 );
+export const unlikeComment = createAsyncThunk('comments/unlike', async (commentId, thunkAPI) => {
+  try {
+    return await commentsService.unlikeComment(commentId);
+  } catch (error) {
+    const message = error.response?.data?.error || error.message;
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
 
 export const authSlice = createSlice({
   name: 'auth',
