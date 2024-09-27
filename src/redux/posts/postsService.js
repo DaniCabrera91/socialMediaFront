@@ -6,74 +6,40 @@ const authHeader = () => {
   return token ? { Authorization: token } : {};
 };
 
-// Obtener todos los posts
-const getAll = async () => {
+// Función para manejar las solicitudes y los errores
+const fetchData = async (method, url, data = null) => {
   try {
-    const res = await axios.get(`${API_URL}/posts`, { headers: authHeader() });
+    const options = {
+      method,
+      url,
+      headers: authHeader(),
+      ...(data && { data }), // Solo añade data si no es null
+    };
+    const res = await axios(options);
     return res.data;
   } catch (error) {
-    console.error('Error al obtener todos los posts:', error.response ? error.response.data : error.message);
+    console.error(`Error en ${method} ${url}:`, error.response ? error.response.data : error.message);
     throw error;
   }
 };
+
+// Obtener todos los posts
+const getAll = () => fetchData('get', `${API_URL}/posts`);
 
 // Obtener post por ID
-const getById = async (id) => {
-  try {
-    const res = await axios.get(`${API_URL}/posts/id/${id}`, { headers: authHeader() });
-    return res.data;
-  } catch (error) {
-    console.error('Error al obtener el post por ID:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
+const getById = (id) => fetchData('get', `${API_URL}/posts/id/${id}`);
 
 // Obtener posts de un usuario
-const getPostsByUser = async (userId) => {
-  try {
-    const res = await axios.get(`${API_URL}/posts/user/${userId}`, { headers: authHeader() });
-    return res.data;
-  } catch (error) {
-    console.error('Error al obtener los posts del usuario:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
+const getPostsByUser = (userId) => fetchData('get', `${API_URL}/posts/user/${userId}`);
 
 // Crear un nuevo post
-const create = async (postData) => {
-  try {
-    const headers = {
-      ...authHeader(),
-      'Content-Type': 'multipart/form-data',
-    };
-    const res = await axios.post(`${API_URL}/posts`, postData, { headers });
-    return res.data.post;
-  } catch (error) {
-    console.error('Error en Solicitud:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
+const create = (postData) => fetchData('post', `${API_URL}/posts`, postData);
 
 // Actualizar un post existente
-const update = async (_id, postData) => {
-  try {
-    const res = await axios.put(`${API_URL}/posts/${_id}`, postData, { headers: authHeader() });
-    return res.data;
-  } catch (error) {
-    console.error('Error al actualizar el post:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
+const update = (_id, postData) => fetchData('put', `${API_URL}/posts/${_id}`, postData);
 
 // Eliminar un post
-const deletePost = async (postId) => {
-  try {
-    await axios.delete(`${API_URL}/posts/${postId}`, { headers: authHeader() });
-  } catch (error) {
-    console.error('Error al eliminar el post:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
+const deletePost = (postId) => fetchData('delete', `${API_URL}/posts/${postId}`);
 
 // Dar like a un post
 const like = async (_id) => {
@@ -81,18 +47,7 @@ const like = async (_id) => {
   if (!token) {
     throw new Error("User not authenticated");
   }
-
-  // Asegúrate de que _id es un string
-  const res = await axios.put(
-    `${API_URL}/posts/like/id/${_id}`,
-    {},
-    {
-      headers: {
-        Authorization: token,
-      },
-    }
-  );
-  return res.data; // Asegúrate de que esto devuelva el post con los likes actualizados y el estado de likedByUser
+  return fetchData('put', `${API_URL}/posts/like/id/${_id}`);
 };
 
 const postsService = {

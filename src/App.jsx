@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import TheHeader from './components/TheHeader/TheHeader'
+import TheFooter from './components/TheFooter /TheFooter.jsx'
 import Home from './components/Home/Home'
 import Login from './components/Login/Login'
 import Register from './components/Register/Register'
@@ -30,6 +31,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TokenVerifier>
+        <TheFooter/>
       </BrowserRouter>
     </div>
   )

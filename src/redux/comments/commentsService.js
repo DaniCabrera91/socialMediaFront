@@ -28,6 +28,15 @@ const getCommentsByPost = async (postId) => {
     throw error;
   }
 };
+const getCommentsCountByPost = async (postId) => {
+    try {
+      const res = await axios.get(`${API_URL}/comments/count/${postId}`, { headers: authHeader() });
+      return res.data.count; // Asegúrate de que la respuesta de la API tenga un campo 'count'
+    } catch (error) {
+      console.error('Error al obtener el recuento de comentarios:', error.response ? error.response.data : error.message);
+      throw error;
+    }
+  };
 
 // Eliminar un comentario
 const deleteComment = async (commentId) => {
@@ -67,6 +76,7 @@ const commentsService = {
   deleteComment,
   likeComment,
   unlikeComment,
+  getCommentsCountByPost
 };
 
 export default commentsService;

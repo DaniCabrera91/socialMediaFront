@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import authService from './authService';
-const API_URL = import.meta.env.VITE_API_URL;
 
 const userStorage = JSON.parse(localStorage.getItem('user'));
 const tokenStorage = localStorage.getItem('token');
@@ -18,9 +17,7 @@ export const register = createAsyncThunk('auth/register', async (user, thunkAPI)
   try {
     return await authService.register(user);
   } catch (error) {
-    const message = error.response.data.errors.map(
-      (error) => `${error.msg} | `
-    ).join('');
+    const message = error.response?.data?.errors?.map(err => err.msg).join(' | ') || error.message;
     return thunkAPI.rejectWithValue(message);
   }
 });
@@ -29,50 +26,43 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   try {
     return await authService.login(user);
   } catch (error) {
-    const message = error.response.data.error;
+    const message = error.response?.data?.error || error.message;
     return thunkAPI.rejectWithValue(message);
   }
 });
 
 export const logout = createAsyncThunk('auth/logout', async () => {
+  await authService.logout();
+});
+
+export const updateUser = createAsyncThunk('auth/updateUser', async (userData, thunkAPI) => {
   try {
-    await authService.logout(); // Esta llamada eliminará el token de la base de datos
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    return await authService.updateUser(userData);
   } catch (error) {
-    console.error(error);
+    const message = error.response?.data?.message || error.message;
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
-export const updateUser = createAsyncThunk(
-  'auth/updateUser',
-  async (userData, thunkAPI) => {
-    try {
-      const token = thunkAPI.getState().auth.token; // Get the token from state
-      const response = await authService.updateUser(userData); // Make sure you call updateUser with the correct arguments
-
-      // Now we should have the updated user data
-      return response; // Directly returning the updated user
-    } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-export const unlikeComment = createAsyncThunk('comments/unlike', async (commentId, thunkAPI) => {
+export const followUser = createAsyncThunk('auth/followUser', async (userId, thunkAPI) => {
   try {
-    return await commentsService.unlikeComment(commentId);
+    return await authService.followUser(userId);
   } catch (error) {
     const message = error.response?.data?.error || error.message;
     return thunkAPI.rejectWithValue(message);
   }
 });
 
+export const unfollowUser = createAsyncThunk('auth/unfollowUser', async (userId, thunkAPI) => {
+  try {
+    return await authService.unfollowUser(userId);
+  } catch (error) {
+    const message = error.response?.data?.error || error.message;
+    return thunkAPI.rejectWithValue(message);
+  }
+});
 
-export const authSlice = createSlice({
+const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
@@ -104,7 +94,6 @@ export const authSlice = createSlice({
         state.token = action.payload.token;
         state.isSuccess = true;
         state.message = action.payload.message;
-
         localStorage.setItem('user', JSON.stringify(action.payload.user));
         localStorage.setItem('token', action.payload.token);
       })
@@ -115,17 +104,18 @@ export const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.user = { ...state.user, ...action.payload };
         state.isSuccess = true;
-        state.user = { ...state.user, ...action.payload }; // Asegúrate de que action.payload contenga la información del usuario actualizado
-        localStorage.setItem('user', JSON.stringify(state.user)); // Guarda el usuario actualizado en localStorage
       })
-      .addCase(updateUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload; // Asegúrate de que el mensaje de error sea el correcto
+      .addCase(followUser.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+      })
+      .addCase(unfollowUser.fulfilled, (state, action) => {
+        state.user = action.payload.user;
       });
   },
 });

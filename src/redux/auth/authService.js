@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -70,12 +70,51 @@ const updateUser = async (userData) => {
     },
   };
 
-  // Assuming userData contains both ID and the FormData object
   const response = await axios.put(`${API_URL}/users/id/${userData.id}`, userData.data, config);
-  return response.data.user; // Ensure this is returning the updated user
+  return response.data.user;
 };
 
+const followUser = async (userId) => {
+  const token = localStorage.getItem('token');
+  const config = {
+    headers: {
+      Authorization: token,
+    },
+  };
 
+  if (!userId) {
+    throw new Error('El ID del usuario a seguir es undefined o null');
+  }
+
+  try {
+    const res = await axios.put(`${API_URL}/users/follow/${userId}`, {}, config);
+    return res.data;
+  } catch (error) {
+    console.error("Error al seguir al usuario:", error);
+    throw new Error("Error al seguir al usuario. Intenta de nuevo.");
+  }
+};
+
+const unfollowUser = async (userId) => {
+  const token = localStorage.getItem('token');
+  const config = {
+    headers: {
+      Authorization: token,
+    },
+  };
+
+  if (!userId) {
+    throw new Error('El ID del usuario a dejar de seguir es undefined o null');
+  }
+
+  try {
+    const res = await axios.put(`${API_URL}/users/unfollow/${userId}`, {}, config);
+    return res.data;
+  } catch (error) {
+    console.error("Error al dejar de seguir al usuario:", error);
+    throw new Error("Error al dejar de seguir al usuario. Intenta de nuevo.");
+  }
+};
 
 const authService = {
   register,
@@ -83,6 +122,8 @@ const authService = {
   logout,
   getToken,
   updateUser,
+  followUser,
+  unfollowUser
 };
 
 export default authService;

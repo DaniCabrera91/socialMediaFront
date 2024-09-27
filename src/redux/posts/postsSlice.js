@@ -6,9 +6,19 @@ const initialState = {
   isLoading: false,
   post: {},
   error: null,
-};
+}
 
-// Obtener posts de un usuario
+// GET ALL
+export const getAll = createAsyncThunk('posts/getAll', async () => {
+  return await postsService.getAll();
+});
+
+// GET BY ID
+export const getById = createAsyncThunk('posts/getById', async (id) => {
+  return await postsService.getById(id);
+});
+
+// GET USER POSTS
 export const getUserPosts = createAsyncThunk('posts/getUserPosts', async (userId, thunkAPI) => {
   try {
     return await postsService.getPostsByUser(userId);
@@ -16,19 +26,9 @@ export const getUserPosts = createAsyncThunk('posts/getUserPosts', async (userId
     const message = error.response?.data?.error || error.message;
     return thunkAPI.rejectWithValue(message);
   }
-});
+})
 
-// Obtener todos los posts
-export const getAll = createAsyncThunk('posts/getAll', async () => {
-  return await postsService.getAll();
-});
-
-// Obtener post por ID
-export const getById = createAsyncThunk('posts/getById', async (id) => {
-  return await postsService.getById(id);
-});
-
-// Crear un nuevo post
+// CREATE POST
 export const createPost = createAsyncThunk('posts/create', async (postData, thunkAPI) => {
   try {
     const response = await postsService.create(postData);
@@ -39,7 +39,7 @@ export const createPost = createAsyncThunk('posts/create', async (postData, thun
   }
 });
 
-// Actualizar un post existente
+// UPDATE POST
 export const updatePost = createAsyncThunk('posts/updatePost', async ({ id, data }, thunkAPI) => {
   try {
     const response = await postsService.update(id, data);
@@ -50,7 +50,7 @@ export const updatePost = createAsyncThunk('posts/updatePost', async ({ id, data
   }
 });
 
-// Eliminar un post
+// DELETE POST
 export const deletePost = createAsyncThunk('posts/deletePost', async (postId, thunkAPI) => {
   try {
     await postsService.deletePost(postId); // Asegúrate de usar deletePost
@@ -61,7 +61,7 @@ export const deletePost = createAsyncThunk('posts/deletePost', async (postId, th
   }
 });
 
-// Dar like a un post
+// LIKE
 export const likePost = createAsyncThunk('posts/like', async (_id, thunkAPI) => {
   try {
     return await postsService.like(_id); // Asegúrate de que _id es un string válido
