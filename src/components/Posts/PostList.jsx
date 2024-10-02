@@ -6,6 +6,7 @@ import { Card, notification, Button, Modal, Input } from 'antd';
 import { HeartOutlined, HeartFilled, CommentOutlined } from '@ant-design/icons';
 import commentsService from '../../redux/comments/commentsService';
 import FollowButton from '../FollowButton/FollowButton';
+import './PostList.styled.scss';
 
 const { Meta } = Card;
 const { TextArea } = Input;
@@ -33,6 +34,7 @@ const PostList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [commentText, setCommentText] = useState('');
+  const [loadingLikes, setLoadingLikes] = useState({});
 
   useEffect(() => {
     dispatch(getAll());
@@ -58,6 +60,9 @@ const PostList = () => {
 
   const handleLike = async (postId) => {
     if (user) {
+      if (loadingLikes[postId]) return;
+
+      setLoadingLikes(prev => ({ ...prev, [postId]: true }));
       try {
         const post = posts.find(post => post._id === postId);
         const isAlreadyLiked = post.likes.includes(user._id);
@@ -72,6 +77,8 @@ const PostList = () => {
         notification.success({ message: updatedPost.message });
       } catch (err) {
         notification.error({ message: 'Error al dar like', description: err.message });
+      } finally {
+        setLoadingLikes(prev => ({ ...prev, [postId]: false }));
       }
     } else {
       notification.warning({ message: 'Debes iniciar sesión para dar like' });
@@ -99,7 +106,6 @@ const PostList = () => {
         ...prevCount,
         [selectedPostId]: (prevCount[selectedPostId] || 0) + 1
       }));
-
     } catch (error) {
       notification.error({ message: 'Error al agregar comentario', description: error.message });
     }
@@ -111,58 +117,65 @@ const PostList = () => {
   };
 
   const handleViewDetails = (postId) => {
-    navigate(`/posts/id/${postId}`); // Navegar a la página de detalles del post
+    navigate(`/posts/id/${postId}`);
   };
 
   if (isLoading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="post-list">
+    <div>
       {[...posts]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .map((post) => {
           const isAlreadyLiked = post.likes.includes(user?._id);
+          const hasImage = post.imageUrl;
 
           return (
-            <Card
-              key={post._id}
-              style={{ marginBottom: '20px' }}
-              cover={post.imageUrl && <img src={post.imageUrl} alt={post.title} style={{ width: '100%' }} />}
-            >
-              <div style={{ padding: '10px' }}>
+            <Card className={`card ${hasImage ? 'expanded' : ''}`} key={post._id}>
+              <p>{formatDate(post.createdAt)}</p>
+              {hasImage && (
+                <div className='ant-card-cover'>
+                  <img src={post.imageUrl} alt={post.title} />
+                </div>
+              )}
+              <div>
                 <Meta
                   title={post.title}
                   description={
                     <>
                       <p>{post.body}</p>
-                      <p>
-                        <strong>Publicado por:</strong> {post.userId ? post.userId.username : 'Usuario Anónimo'}
-                        {post.userId && (
-                          <span> {/* Eliminar el stopPropagation */}
-                            <FollowButton postUserId={post.userId._id} />
-                          </span>
+                      <p className="meta">
+                        <strong>Publicado por:</strong> {post.userId ? post.userId.username : "Usuario desconocido"}
+                        {post.userId && post.userId._id !== user?._id && (
+                          <FollowButton targetUserId={post.userId._id} className='follow-button'/>
                         )}
                       </p>
+                      
                     </>
                   }
                 />
-                <p>Publicado: {formatDate(post.createdAt)}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div>
+                <div className="like-comment">
+                  <div className='like'>
                     {isAlreadyLiked ? (
-                      <HeartFilled onClick={() => handleLike(post._id)} style={{ color: 'red', cursor: 'pointer' }} />
+                      <HeartFilled
+                        onClick={() => handleLike(post._id)}
+                        disabled={loadingLikes[post._id]} // Deshabilitar el botón
+                      />
                     ) : (
-                      <HeartOutlined onClick={() => handleLike(post._id)} style={{ cursor: 'pointer' }} />
+                      <HeartOutlined
+                        onClick={() => handleLike(post._id)}
+                        disabled={loadingLikes[post._id]} // Deshabilitar el botón
+                      />
                     )}
-                    <span style={{ marginLeft: '5px' }}>{post.likes.length}</span>
+                    <span>{post.likes.length} </span>
                   </div>
-                  <div>
-                    <CommentOutlined onClick={() => showCommentModal(post._id)} style={{ cursor: 'pointer' }} />
-                    <span style={{ marginLeft: '5px' }}>{commentsCount[post._id] || 0}</span>
+                  <div className='comment'>
+                    <CommentOutlined onClick={() => showCommentModal(post._id)}/>
+                    <span>{commentsCount[post._id] || 0}</span>
                   </div>
                 </div>
-                <Button type="primary" onClick={() => handleViewDetails(post._id)} style={{ marginTop: '10px' }}>
+                <Button type="primary" onClick={() => handleViewDetails(post._id)} className='more-button'>
                   Ver más
                 </Button>
               </div>

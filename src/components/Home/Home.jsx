@@ -1,10 +1,11 @@
 import React from 'react'
 import PostList from '../Posts/PostList'
+import './Home.styled.scss'
 
 const Home = () => {
   return (
-    <div>
-      <h1>Home</h1>
+    <div className='homeBody'>
+      <h1>Posts</h1>
       <PostList/>
     </div>
   )

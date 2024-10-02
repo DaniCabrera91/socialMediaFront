@@ -1,0 +1,42 @@
+.search-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--background-color); // Fondo de la página
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Sombra suave
+  
+    h2 {
+      color: var(--text-color); // Color del texto
+      font-size: 2rem; // Tamaño del título
+      margin-bottom: 1.5rem;
+      text-align: center; // Centrar el texto
+    }
+  
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem; // Espacio entre cada post
+  
+      .post-card {
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color); // Borde de la tarjeta
+        border-radius: 8px; // Esquinas redondeadas
+        padding: 1rem; // Espaciado dentro de la tarjeta
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+        &:hover {
+          transform: translateY(-5px); // Efecto de levantar en hover
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); // Sombra más intensa
+        }
+      }
+    }
+  
+    p {
+      color: var(--secondary-text-color); // Color del texto cuando no hay resultados
+      font-size: 1.2rem;
+      text-align: center; // Centrar el texto
+      margin-top: 2rem;
+    }
+  }
+  

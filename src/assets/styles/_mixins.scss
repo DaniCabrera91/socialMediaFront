@@ -1,5 +1,4 @@
-// src/assets/styles/_mixins.scss
-
+//_mixins.scss
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -14,9 +13,8 @@
 
 @mixin breakpoint($point) {
   @if $point == 'mobile' {
-    @media (max-width: $mobile-breakpoint) {
+    @media (max-width: $mobile) {
       @content;
     }
   }
-  // Agregar más puntos de interrupción según sea necesario
 }

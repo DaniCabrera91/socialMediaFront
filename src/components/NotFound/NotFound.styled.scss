@@ -1,0 +1,21 @@
+.not-found-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; // Altura para centrar en la página
+    text-align: center;
+    background-color: var(--background-color); // Fondo de la página
+    color: var(--text-color); // Color del texto
+  
+    h1 {
+      font-size: 4rem; // Tamaño grande para el texto 404
+      margin-bottom: 1rem;
+      color: var(--hover-color);
+    }
+  
+    p {
+      font-size: 1.5rem; // Tamaño del texto secundario
+      color: var(--text-color); // Color más suave
+    }
+  }
+  

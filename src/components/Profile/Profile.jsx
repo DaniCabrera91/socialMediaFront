@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getUserPosts, updatePost, deletePost } from '../../redux/posts/postsSlice' // Importa las acciones necesarias
-import { updateUser, reset } from '../../redux/auth/authSlice' 
-import { Tabs, Spin, Avatar, Input, Button, Upload, notification, Card, Modal } from 'antd' 
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserPosts, updatePost, deletePost } from '../../redux/posts/postsSlice';
+import { updateUser, reset } from '../../redux/auth/authSlice';
+import { Tabs, Spin, Avatar, Input, Button, Upload, notification, Card, Modal } from 'antd';
+import './Profile.styled.scss';
 
-const { Meta } = Card
+const { Meta } = Card;
 
 const Profile = () => {
-  const dispatch = useDispatch()
-  const { user, isError, isSuccess, message } = useSelector((state) => state.auth)
-  const { posts, isLoading } = useSelector((state) => state.posts)
+  const dispatch = useDispatch();
+  const { user, isError, isSuccess, message } = useSelector((state) => state.auth);
+  const { posts, isLoading } = useSelector((state) => state.posts);
 
-  // Estados para la edición de perfil y publicaciones
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [isEditingPost, setIsEditingPost] = useState(false)
-  const [currentPost, setCurrentPost] = useState(null)
+  // State for editing profile and posts
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [currentPost, setCurrentPost] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     username: '',
@@ -24,9 +25,9 @@ const Profile = () => {
     postTitle: '',
     postBody: '',
     postImage: null,
-  })
+  });
 
-  const { firstName, username, email, profileImage, previewImageUrl, postTitle, postBody, postImage } = formData
+  const { firstName, username, email, profileImage, previewImageUrl, postTitle, postBody, postImage } = formData;
 
   useEffect(() => {
     if (user) {
@@ -35,108 +36,117 @@ const Profile = () => {
         username: user.username || '',
         email: user.email || '',
         previewImageUrl: user.profileImageUrl || '',
-      })
-      dispatch(getUserPosts(user._id)) // Cargar publicaciones del usuario
+      });
+      dispatch(getUserPosts(user._id)); // Load user's posts when user is present
     }
-  }, [user, dispatch])
+  }, [user, dispatch]);
 
   useEffect(() => {
     if (isError) {
-      notification.error({ message: 'Error', description: message })
+      notification.error({ message: 'Error', description: message });
     }
     if (isSuccess) {
-      notification.success({ message: 'Éxito', description: 'Perfil actualizado con éxito' })
-      setIsEditingProfile(false) 
+      notification.success({ message: 'Success', description: 'Profile updated successfully' });
+      setIsEditingProfile(false);
     }
 
     return () => {
-      dispatch(reset())
-    }
-  }, [isError, isSuccess, message, dispatch])
+      dispatch(reset());
+    };
+  }, [isError, isSuccess, message, dispatch]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const handleImageChange = (info) => {
+  const handleImageChange = (info, type) => {
     if (info.fileList && info.fileList.length > 0) {
-      const file = info.fileList[0].originFileObj 
-      setFormData({
-        ...formData,
-        profileImage: file,
-        previewImageUrl: URL.createObjectURL(file),
-      })
+      const file = info.fileList[0].originFileObj;
+      if (type === 'profile') {
+        setFormData({
+          ...formData,
+          profileImage: file,
+          previewImageUrl: URL.createObjectURL(file),
+        });
+      } else if (type === 'post') {
+        setFormData({
+          ...formData,
+          postImage: file,
+        });
+      }
     }
-  }
+  };
 
   const onSubmitProfile = () => {
-    const updatedData = new FormData()
-    updatedData.append('firstName', firstName)
-    updatedData.append('username', username)
-    updatedData.append('email', email)
+    const updatedData = new FormData();
+    updatedData.append('firstName', firstName);
+    updatedData.append('username', username);
+    updatedData.append('email', email);
     if (profileImage) {
-      updatedData.append('profileImage', profileImage)
+      updatedData.append('profileImage', profileImage);
     }
-    dispatch(updateUser({ id: user._id, data: updatedData }))
-  }
+    dispatch(updateUser({ id: user._id, data: updatedData }));
+  };
 
   const onSubmitPost = () => {
-    const updatedData = new FormData()
-    updatedData.append('title', postTitle)
-    updatedData.append('body', postBody)
+    const updatedData = new FormData();
+    updatedData.append('title', postTitle);
+    updatedData.append('body', postBody);
+    
+    // Always append postImage whether creating or updating a post
     if (postImage) {
-      updatedData.append('image', postImage)
+      updatedData.append('image', postImage);
     }
 
     if (currentPost) {
       dispatch(updatePost({ id: currentPost._id, data: updatedData }))
         .unwrap()
         .then(() => {
-          notification.success({ message: 'Post actualizado correctamente' })
-          resetPostForm()
-          dispatch(getUserPosts(user._id))
-          setIsEditingPost(false)
+          notification.success({ message: 'Post updated successfully' });
+          resetPostForm();
+          dispatch(getUserPosts(user._id)); // Refresh user's posts
+          setIsEditingPost(false);
         })
         .catch((error) => {
-          notification.error({ message: 'Error', description: error })
-        })
+          notification.error({ message: 'Error', description: error.message || 'Failed to update post' });
+        });
     } else {
-      // Aquí puedes manejar la creación de un nuevo post
-      // dispatch(createPost(updatedData)) // Si tienes una acción para crear un post
+      // If it's a new post, handle the creation logic here (if you have a createPost action)
+      // dispatch(createPost({ data: updatedData }));
     }
-  }
+  };
 
   const resetPostForm = () => {
-    setCurrentPost(null)
-    setFormData({ ...formData, postTitle: '', postBody: '', postImage: null })
-  }
+    setCurrentPost(null);
+    setFormData({ ...formData, postTitle: '', postBody: '', postImage: null });
+  };
 
   const handleEditPost = (post) => {
-    setCurrentPost(post)
+    setCurrentPost(post);
     setFormData({
       postTitle: post.title,
       postBody: post.body,
       postImage: null,
-    })
-    setIsEditingPost(true)
-  }
+    });
+    setIsEditingPost(true);
+  };
 
   const handleDeletePost = (postId) => {
     dispatch(deletePost(postId))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Post eliminado correctamente' })
-        dispatch(getUserPosts(user._id))
+        notification.success({ message: 'Post deleted successfully' });
+        dispatch(getUserPosts(user._id)); // Refresh the user's posts
       })
       .catch((error) => {
-        notification.error({ message: 'Error', description: error })
-      })
-  }
+        notification.error({ message: 'Error', description: error.message || 'Failed to delete post' });
+      });
+  };
 
   const items = [
     {
       key: '1',
-      label: 'Perfil',
+      label: 'Profile',
       children: (
         <div className="profile-info">
           {isEditingProfile ? (
@@ -144,52 +154,51 @@ const Profile = () => {
               <Upload
                 name="profileImage"
                 beforeUpload={() => false}
-                onChange={handleImageChange} 
+                onChange={(info) => handleImageChange(info, 'profile')}
                 showUploadList={false}
               >
-                <div style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div>
                   <Avatar
-                    src={previewImageUrl || user?.profileImageUrl} 
+                    src={previewImageUrl || user?.profileImageUrl}
                     size={128}
                   />
-                  <span style={{ marginTop: '5px', color: '#1890ff' }}>Cambiar Imagen</span>
+                  <span>Change Image</span>
                 </div>
               </Upload>
               <Input
                 name="firstName"
                 value={firstName}
                 onChange={handleInputChange}
-                placeholder="Nombre"
-                style={{ marginBottom: '10px' }}
+                placeholder="First Name"
               />
               <Input
                 name="username"
                 value={username}
                 onChange={handleInputChange}
-                placeholder="Nombre de Usuario"
-                style={{ marginBottom: '10px' }}
+                placeholder="Username"
               />
               <Input
                 name="email"
                 value={email}
                 onChange={handleInputChange}
                 placeholder="Email"
-                style={{ marginBottom: '10px' }}
               />
-              <Button type="primary" onClick={onSubmitProfile}>Guardar</Button>
-              <Button onClick={() => setIsEditingProfile(false)} style={{ marginLeft: '10px' }}>Cancelar</Button>
+              <Button type="primary" onClick={onSubmitProfile}>Save</Button>
+              <Button onClick={() => setIsEditingProfile(false)}>Cancel</Button>
             </>
           ) : (
             user ? (
               <>
-                <Avatar src={user.profileImageUrl} alt={user.firstName} size={128} style={{ marginBottom: '20px' }} />
-                <p><strong>Nombre:</strong> {user.firstName}</p>
-                <p><strong>Nombre de Usuario:</strong> {user.username}</p>
+                <Avatar src={user.profileImageUrl} alt={user.firstName} size={128}/>
+                <p><strong>Name:</strong> {user.firstName}</p>
+                <p><strong>Username:</strong> {user.username}</p>
                 <p><strong>Email:</strong> {user.email}</p>
-                <Button type="primary" onClick={() => setIsEditingProfile(true)}>Editar Perfil</Button>
+                <p><strong>Seguidores:</strong> {user.followers ? user.followers.length : 0}</p>
+                <p><strong>Seguidos:</strong> {user.follows ? user.follows.length : 0}</p>
+                <Button type="primary" onClick={() => setIsEditingProfile(true)}>Edit Profile</Button>
               </>
             ) : (
-              <p>Por favor, inicia sesión para ver tu perfil.</p>
+              <p>Please log in to view your profile.</p>
             )
           )}
         </div>
@@ -200,84 +209,88 @@ const Profile = () => {
       label: 'Posts',
       children: (
         <>
-          <h2>Posts Creados</h2>
+          <h2>Created Posts</h2>
           {isLoading ? (
-            <Spin /> 
+            <Spin />
           ) : posts.length > 0 ? (
             <div className="posts-list">
               {posts.map((post) => (
                 <Card key={post._id} cover={post.imageUrl && <img alt={post.title} src={post.imageUrl} />}>
                   <Meta title={post.title} description={post.body} />
-                  <Button onClick={() => handleEditPost(post)} style={{ marginTop: '10px' }}>Editar</Button>
-                  <Button onClick={() => handleDeletePost(post._id)} style={{ marginLeft: '10px' }}>Eliminar</Button>
+                  <Button onClick={() => handleEditPost(post)}>Edit</Button>
+                  <Button onClick={() => handleDeletePost(post._id)}>Delete</Button>
                 </Card>
               ))}
             </div>
           ) : (
-            <p>No hay posts creados por este usuario.</p>
+            <p>No posts created by this user.</p>
           )}
-          <Button type="primary" onClick={() => {
-            resetPostForm()
-            setIsEditingPost(true) // Para crear un nuevo post
-          }}>Crear Nuevo Post</Button>
         </>
       ),
     },
-  ]
+  ];
 
   return (
     <div className="profile-container">
-      <h1>Perfil</h1>
+      <h1>Profile</h1>
       <Tabs items={items} defaultActiveKey="1" />
 
       <Modal
-        title={currentPost ? "Editar Post" : "Crear Nuevo Post"}
+        title={currentPost ? "Edit Post" : "Create New Post"}
         open={isEditingPost}
         onCancel={() => {
-          setIsEditingPost(false)
-          resetPostForm()
+          setIsEditingPost(false);
+          resetPostForm();
         }}
         footer={null}
       >
-        <form onSubmit={(e) => { 
-          e.preventDefault()
-          onSubmitPost()
-          }}>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          onSubmitPost();
+        }}>
           <Input
             name="postTitle"
             value={postTitle}
             onChange={handleInputChange}
-            placeholder="Título del Post"
-            style={{ marginBottom: '10px' }}
+            placeholder="Post Title"
           />
           <Input.TextArea
             name="postBody"
             value={postBody}
             onChange={handleInputChange}
-            placeholder="Contenido del Post"
-            rows={4}
-            style={{ marginBottom: '10px' }}
+            placeholder="Post Body"
           />
           <Upload
+            name="postImage"
             beforeUpload={() => false}
-            onChange={(info) => {
-              if (info.fileList && info.fileList.length > 0) {
-                const file = info.fileList[0].originFileObj
-                setFormData({
-                  ...formData,
-                  postImage: file,
-                })
-              }
-            }}
+            onChange={(info) => handleImageChange(info, 'post')}
             showUploadList={false}
           >
-            <Button>Seleccionar Imagen</Button>
+            <Button>Upload Image</Button>
           </Upload>
-          <Button type="primary" htmlType="submit" style={{ marginTop: '10px' }}>Guardar Post</Button>
+          
+          {currentPost && currentPost.imageUrl && !postImage && (
+            <div>
+              <img src={currentPost.imageUrl} alt="Current Post"/>
+              <span>Current Image</span>
+            </div>
+          )}
+          
+          {postImage && (
+            <div>
+              <img src={URL.createObjectURL(postImage)} alt="Post Preview"/>
+              <Button onClick={() => setFormData({ ...formData, postImage: null })} type="danger">Delete Image</Button>
+            </div>
+          )}
+
+          <div>
+            <Button type="primary" htmlType="submit">Submit</Button>
+            <Button onClick={() => resetPostForm()}>Cancel</Button>
+          </div>
         </form>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

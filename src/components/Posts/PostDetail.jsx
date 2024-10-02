@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getById, likePost, updatePostLikes } from '../../redux/posts/postsSlice';
 import { useParams } from 'react-router-dom';
 import { Card, notification, Input, Button } from 'antd';
-import { HeartOutlined, HeartFilled, LikeOutlined, LikeFilled } from '@ant-design/icons';
+import { HeartOutlined, HeartFilled, LikeOutlined, LikeFilled, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import commentsService from '../../redux/comments/commentsService';
 import { likeComment, unlikeComment } from '../../redux/comments/commentsSlice';
+import FollowButton from '../FollowButton/FollowButton';
+import './PostDetail.styled.scss';
 
 const { Meta } = Card;
 const { TextArea } = Input;
@@ -19,6 +21,7 @@ const PostDetail = () => {
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null); // Estado para el comentario en edición
 
   useEffect(() => {
     const loadPostAndComments = async () => {
@@ -87,15 +90,22 @@ const PostDetail = () => {
     }
 
     try {
-      await commentsService.createComment({ comment: commentText, postId: _id });
-      setCommentText(''); // Limpiar el campo de texto del comentario
-      notification.success({ message: 'Comentario agregado con éxito' });
-      
-      // Vuelve a cargar los comentarios para mostrar el nombre de usuario
+      if (editingCommentId) {
+        // Si estamos editando un comentario
+        await commentsService.updateComment(editingCommentId, { comment: commentText });
+        notification.success({ message: 'Comentario editado con éxito' });
+        setEditingCommentId(null); // Resetear el estado de edición
+      } else {
+        // Si estamos creando un nuevo comentario
+        await commentsService.createComment({ comment: commentText, postId: _id });
+        notification.success({ message: 'Comentario agregado con éxito' });
+      }
+
+      setCommentText(''); // Limpiar el campo de texto
       await fetchComments();
     } catch (error) {
-      console.error('Error al agregar comentario:', error);
-      notification.error({ message: 'Error al agregar comentario', description: error.message });
+      console.error('Error al agregar/editar comentario:', error);
+      notification.error({ message: 'Error al agregar/editar comentario', description: error.message });
     }
   };
 
@@ -133,6 +143,22 @@ const PostDetail = () => {
     }
   };
 
+  const handleEditComment = (commentId, currentComment) => {
+    setEditingCommentId(commentId);
+    setCommentText(currentComment);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await commentsService.deleteComment(commentId);
+      notification.success({ message: 'Comentario eliminado con éxito' });
+      await fetchComments(); // Actualizar la lista de comentarios
+    } catch (error) {
+      console.error('Error al eliminar comentario:', error);
+      notification.error({ message: 'Error al eliminar comentario', description: error.message });
+    }
+  };
+
   if (isLoading) {
     return <div>Cargando...</div>;
   }
@@ -141,42 +167,59 @@ const PostDetail = () => {
     return <div>Error: {error}</div>;
   }
 
+  if (!post) {
+    return <div>No se encontró el post.</div>;
+  }
+
   return (
-    <div>
-      <Card
-        style={{ width: '100%' }}
-        cover={<img alt="example" src={post.imageUrl} />}
-      >
+    <div className="post-detail-container">
+      <Card className="post-card">
+        {post.imageUrl ? (
+          <img alt="example" src={post.imageUrl} className="post-image" />
+        ) : null}
         <Meta title={post.title} description={post.body} />
+        <div className="post-meta">
+          <p>
+            <strong>Publicado por:</strong> {post.userId ? post.userId.username : "Usuario desconocido"}
+            {post.userId && post.userId._id !== user?._id && (
+              <FollowButton targetUserId={post.userId._id} />
+            )}
+          </p>
+        </div>
         <div>
-          <Button onClick={handlePostLike}>
-            {likedPost ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />} 
+          <Button className="like-button" onClick={handlePostLike}>
+            {likedPost ? <HeartFilled/> : <HeartOutlined />} 
             {likesCount} Likes
           </Button>
         </div>
       </Card>
 
-      <h2>Comentarios:</h2>
-      <div>
+      <h2 className='comment-title'>Comentarios:</h2>
+      <div className="comment-section">
         <TextArea
+          className="comment-input"
           rows={4}
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Escribe un comentario..."
         />
-        <Button onClick={handleCommentSubmit} type="primary">Enviar</Button>
+        <Button className="comment-button" onClick={handleCommentSubmit} type="primary">
+          {editingCommentId ? 'Actualizar Comentario' : 'Enviar'}
+        </Button>
       </div>
 
-      <div>
+      <div className="comments-list">
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <Card key={comment._id} style={{ marginTop: 16 }}>
+            <Card key={comment._id} className="comment-card">
               <Meta title={comment.userId ? comment.userId.username : "Usuario desconocido"} description={comment.comment} />
-              <div>
-                <Button onClick={() => handleCommentLike(comment._id)}>
-                  {comment.likes && comment.likes.includes(user?._id) ? <LikeFilled style={{ color: 'blue' }} /> : <LikeOutlined />} 
+              <div className="comment-content">
+                <Button className="like-button" onClick={() => handleCommentLike(comment._id)}>
+                  {comment.likes && comment.likes.includes(user?._id) ? <LikeFilled/> : <LikeOutlined />} 
                   {comment.likes ? comment.likes.length : 0} Likes
                 </Button>
+                <Button onClick={() => handleEditComment(comment._id, comment.comment)}><EditOutlined/>Editar</Button>
+                <Button onClick={() => handleDeleteComment(comment._id)}><DeleteOutlined/>Eliminar</Button>
               </div>
             </Card>
           ))

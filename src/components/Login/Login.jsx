@@ -1,74 +1,56 @@
-import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { login, reset } from '../../redux/auth/authSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { notification } from 'antd'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/auth/authSlice';
+import './Login.styled.scss';
 
 const Login = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch() 
-    
-    const { isError, isSuccess, message, user } = useSelector((state) => state.auth)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (isError) {
-            notification.error({ message: 'Error', description: message })
-        }
-
-        if (isSuccess && user) {
-            notification.success({ message: 'Success', description: message })
-            setTimeout(() => {
-                navigate('/profile')
-            }, 2000)
-        }
-
-        return () => {
-            dispatch(reset())
-        }
-    }, [isError, isSuccess, message, user, navigate, dispatch])
-
-    const [formData, setFormData] = useState({ 
-        email:'', 
-        password:'' 
-    })
-    
-    const {email, password} = formData
-
-    const onChange = (e) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value,
-        }))
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(login({ email, password })).unwrap();
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
     }
+  };
 
-    const onSubmit = (e) => {
-        e.preventDefault()
-        dispatch(login(formData))
-    }
-    
-    return (
-        <form onSubmit={onSubmit}>
-            <input 
-                type="email" 
-                name="email" 
-                value={email} 
-                onChange={onChange}
-                placeholder="Email"
-                required
-                autoComplete='off'
-            />
-            <input 
-                type="password" 
-                name="password" 
-                value={password} 
-                onChange={onChange}
-                placeholder="Password"
-                required
-                autoComplete='off'
-            />
-            <button type="submit">Login</button>
-        </form>
-    )
-}
+  return (
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleSubmit}>
+        <h2>Iniciar Sesión</h2>
+        <div className="form-group">
+          <label htmlFor="email">Correo Electrónico</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="login-button">Entrar</button>
+      </form>
+      <div className="register-link">
+        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+      </div>
+    </div>
+  );
+};
 
-export default Login
+export default Login;

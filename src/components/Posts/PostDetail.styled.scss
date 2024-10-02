@@ -1,0 +1,140 @@
+.post-detail-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: auto;
+    width: 50%;
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--hover-color);
+  
+    /* Estilos para la tarjeta del post */
+    .post-card {
+      background-color: var(--background-color);
+    }
+  
+    .post-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+  
+    .ant-card-head-title,
+    .ant-card-meta-title,
+    .post-body {
+      color: var(--text-color);
+    }
+  
+    .post-meta {
+      margin-bottom: 1rem;
+    }
+  
+    /* Título de la sección de comentarios */
+    .comment-title {
+      margin-top: 1rem;
+      color: var(--text-color);
+    }
+  
+    /* Sección de input de comentarios */
+    .comment-section {
+      padding-top: 1rem;
+  
+      .comment-input {
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+  
+      .comment-input::placeholder {
+        color: var(--text-color);
+      }
+  
+      .comment-button {
+        background-color: var(--header-background-color);
+        color: var(--text-color);
+        margin-top: 10px;
+        border-color: var(--hover-color);
+  
+        /* Sobrescribir el estilo de hover predeterminado */
+        &:hover {
+          background-color: var(--hover-color);
+          color: var(--background-color); /* Cambiar color del texto en hover */
+        }
+      }
+    }
+  
+    /* Listado de comentarios */
+    .comments-list {
+      margin-top: 2rem;
+  
+      .comment-card {
+        margin-bottom: 1rem;
+        background-color: var(--background-color);
+        border: none;
+        padding: 1rem;
+      }
+  
+      .comment-content, 
+      .ant-card-meta-description {
+        display: flex;
+        flex-direction: column;
+        color: var(--text-color);
+      }
+    }
+  
+    .comment-username {
+      font-weight: bold;
+      color: var(--secondary-text-color);
+    }
+  
+    /* Botones generales */
+    button {
+      background-color: var(--header-background-color);
+      border-color: var(--hover-color);
+      color: var(--text-color);
+      margin-bottom: 1rem;
+      transition: background-color 0.3s, transform 0.2s;
+  
+      &:hover {
+        background-color: var(--hover-color);
+        color: var(--text-color); /* Cambiar color del texto en hover */
+        transform: scale(1.05); /* Añadir una leve transición */
+      }
+    }
+  
+    /* Botón de like */
+    .like-button {
+      display: flex;
+      align-items: center;
+      margin: 2rem;
+      border-color: var(--hover-color);
+      color: var(--text-color);
+      background-color: var(--header-background-color);
+  
+      &:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s;
+      }
+    }
+  
+    /* Botón de seguir */
+    .followButton {
+      background-color: var(--header-background-color);
+      color: var(--text-color);
+      display: flex;
+  
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+  
+    /* Estilo del modal para editar comentario */
+    .modal-input {
+      min-height: 100px;
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+  }
+  
