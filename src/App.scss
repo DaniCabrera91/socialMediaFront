@@ -1,6 +1,23 @@
+//App.scss
+@import './assets/styles/reset';
 @import './assets//styles/variables';
 @import './assets/styles/mixins';
 @import './assets/styles/breakpoints';
-@import './assets/styles/reset';
 @import './assets/styles/base';
 @import './assets/styles/themes';
+
+.app-container{
+    width: 70%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: space-around;
+    align-items: center;
+}  
+
+.main-content{
+    width:125%;
+    margin-left: 60%;    
+}
+  

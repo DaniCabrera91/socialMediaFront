@@ -1,11 +1,21 @@
-// src/assets/styles/_themes.scss
-
+ 
 .light-theme {
-  --background-color: #ffffff;
-  --text-color: #000000;
+  --background-color: #f8f9fa;
+  --text-color: #343a40;
+  --header-background-color: #f1f1f1;
+  --hover-color:#708396;
 }
 
 .dark-theme {
   --background-color: #333333;
-  --text-color: #ffffff;
+  --text-color: #f8f9fa;
+  --header-background-color: #708396;
+  --hover-color:#ffa23e;
+
 }
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+

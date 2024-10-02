@@ -17,7 +17,9 @@ export const register = createAsyncThunk('auth/register', async (user, thunkAPI)
   try {
     return await authService.register(user);
   } catch (error) {
-    const message = error.response?.data?.errors?.map(err => err.msg).join(' | ') || error.message;
+    const message = error.response.data.errors.map(
+      (error) => `${error.msg} | `
+    );
     return thunkAPI.rejectWithValue(message);
   }
 });
@@ -43,6 +45,7 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (userData, t
     return thunkAPI.rejectWithValue(message);
   }
 });
+
 
 export const followUser = createAsyncThunk('auth/followUser', async (userId, thunkAPI) => {
   try {
@@ -78,6 +81,9 @@ const authSlice = createSlice({
       localStorage.removeItem('user');
       localStorage.removeItem('token');
     },
+    updateUserFollowStatus: (state, action) => {
+      state.user.follows = action.payload.follows; // Actualizar la lista de "follows" del usuario
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -112,13 +118,17 @@ const authSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(followUser.fulfilled, (state, action) => {
-        state.user = action.payload.user;
+        state.user.follows = action.payload.follows; 
+        state.isSuccess = true;
+        state.message = "Has seguido al usuario con éxito.";
       })
       .addCase(unfollowUser.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-      });
+        state.user.follows = action.payload.follows; 
+        state.isSuccess = true;
+        state.message = "Has dejado de seguir al usuario con éxito.";
+      });     
   },
 });
 
-export const { reset, clearAuthState } = authSlice.actions;
+export const { reset, clearAuthState, updateUserFollowStatus } = authSlice.actions;
 export default authSlice.reducer;

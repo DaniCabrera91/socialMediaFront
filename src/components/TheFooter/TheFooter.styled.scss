@@ -1,0 +1,35 @@
+// TheFooter.styled.scss
+
+.footer {
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    background-color: var(--header-background-color); // Color de fondo
+    text-align: center; // Centrar el contenido
+  
+    .footer-content, svg {
+      width: 100%;
+      display: flex;
+      flex-direction: column; // Colocar elementos uno debajo del otro
+      justify-content:space-evenly ; // Centrar horizontalmente
+      color: var(--text-color); // Color del texto
+  
+      .github-link {
+        margin-bottom: 10px; // Espaciado inferior
+        transition: transform 0.3s; // Transición suave al hacer hover
+  
+        &:hover {
+          transform: scale(1.2); // Aumentar tamaño al hacer hover
+        }
+      }
+  
+      p {
+        margin: 0; // Eliminar márgenes
+        font-size: 14px; // Tamaño de fuente
+      }
+    }
+  }
+
+.ant-btn-circle{ 
+    background-color: var(--hover-color);
+}

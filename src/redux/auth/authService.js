@@ -3,9 +3,9 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const register = async (userData) => {
-  const res = await axios.post(`${API_URL}/users`, userData);
-  return res.data;
-};
+  const res = await axios.post(`${API_URL}/users/register`, userData)
+  return res.data
+}
 
 const login = async (userData) => {
   const res = await axios.post(`${API_URL}/users/login`, userData);

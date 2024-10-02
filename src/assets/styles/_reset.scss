@@ -1,14 +1,14 @@
-// src/assets/styles/_reset.scss
+@import './variables';
 
-/* Reset básico para eliminar márgenes y paddings por defecto */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-decoration: none;
 }
 
-body {
-  font-family: $font-stack;
-  color: $text-color;
-  background-color: $background-color;
+html, body {
+  height: 100%;
 }
+
+

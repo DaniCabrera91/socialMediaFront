@@ -1,0 +1,166 @@
+@import '../../assets/styles/mixins';
+@import '../../assets/styles/variables';
+@import '../../assets/styles/themes';
+
+h1{
+    margin-left: 12rem;
+    padding: 1rem 0 1rem 0;
+}
+.card {
+    display: flex;
+    max-width: 60%;
+    flex-direction: column;
+    justify-content: space-around;
+    border: none;
+    margin: 0 0 2rem 12rem;
+    background-color: var(--background-color);
+    box-shadow: 0 4px 12px var(--hover-color);
+    transition: transform 0.3s ease;
+    
+
+  &:hover {
+    transform: translateY(-5px); // Levantar la tarjeta al hacer hover
+    box-shadow: 0 8px 16px var(--hover-color); // Aumentar la sombra
+  }
+  .ant-card-cover {
+    height: auto; // Deja que la altura se ajuste según el contenido
+    overflow: hidden; // Oculta cualquier desbordamiento
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 100%; // La imagen toma todo el ancho
+      height: auto; // La imagen se ajusta automáticamente
+      object-fit: cover; // Mantener relación de aspecto
+      border-radius: $border-radius; // Bordes redondeados para la imagen
+    }
+  }
+  .ant-card-meta-title{color: var(--text-color);
+}
+
+  .ant-card-body {
+    padding: 1rem;
+    color: var(--text-color);
+
+    p {
+      font-size: 1rem;  
+      color: var(--text-color); // Color del cuerpo del texto
+      line-height: 1.5; // Espaciado entre líneas
+      margin: 1rem 0; // Espaciado en la parte superior e inferior
+    }
+
+    .meta {
+      font-size: 0.8rem; // Tamaño del texto adicional (fecha y autor)
+      color: var(--text-color); // Color del texto secundario
+      margin-bottom: 1rem;
+    }
+  }
+
+  // Sección de like y comentarios
+  .like-comment {
+    font-size: 1.2rem;  
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-md; // Espaciado superior
+    .like, .comment{
+      font-size: 1.2rem;  
+      color: var(--text-color);
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--hover-color); // Color al hacer hover
+      }
+    }
+
+    .comment-icon {
+      color: var(--text-color);
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--hover-color); // Cambiar color al pasar el ratón
+      }
+    }
+  }
+
+  &.expanded {
+    height: auto; // Para permitir que las tarjetas crezcan según el contenido
+  }
+}
+
+// Estilos de la lista de comentarios y botones
+.comments-list {
+  margin-top: 2rem;
+
+  .comment-card {
+    margin-bottom: 1rem;
+    background-color: var(--background-color); // Fondo del comentario
+    border: none;
+    padding: 1rem; // Espaciado alrededor del comentario
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); // Sombra para cada comentario
+  }
+
+  .comment-content,
+  .ant-card-meta-description {
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+  }
+
+  .comment-username {
+    font-weight: bold;
+    color: var(--secondary-text-color);
+  }
+}
+
+// Botón de seguir
+.ant-btn-default{
+  background-color: var(--header-background-color);
+  border-color: var(--hover-color);
+  color: var(--text-color);
+  display: flex;
+
+  &:hover {
+    background-color: var(--hover-color); // Fondo en hover
+  }
+}
+
+// Botón de like
+.like-button{
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  border-color: var(--hover-color);
+  background-color: var(--header-background-color);
+  color: var(--text-color);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1); // Efecto de escalado en hover
+    background-color: var(--hover-color);
+  }
+}
+
+.more-button{
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+    border-color: var(--hover-color);
+    background-color: var(--header-background-color);
+    color: var(--text-color);
+    transition: transform 0.2s ease;
+  
+    &:hover {
+      transform: scale(1.1); // Efecto de escalado en hover
+      background-color: var(--hover-color);
+    }
+  }
+
+  .ant-btn-default{
+    margin: 1rem 0;
+    color: var(--text-color);
+    &:hover{background-color: var(--hover-color);}
+  }

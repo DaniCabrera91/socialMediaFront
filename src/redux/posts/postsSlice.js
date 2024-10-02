@@ -110,12 +110,13 @@ const postsSlice = createSlice({
         state.post = action.payload;
       })
       .addCase(createPost.fulfilled, (state, action) => {
-        if (action.payload && action.payload._id) {
-          state.posts.push(action.payload);
+        const newPost = action.payload.post
+        if (newPost && newPost._id) {
+          state.posts.push(newPost)
         } else {
           console.error('Post creado sin _id:', action.payload);
         }
-      })
+      })      
       .addCase(createPost.rejected, (state, action) => {
         state.error = action.payload || action.error.message;
       })

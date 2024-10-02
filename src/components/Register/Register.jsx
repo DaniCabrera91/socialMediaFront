@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { register, reset } from '../../redux/auth/authSlice'
-import { notification } from 'antd'
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { register, reset } from '../../redux/auth/authSlice';
+import { notification, Upload, Avatar } from 'antd';
 
 const Register = () => {
   const [formData, setFormData] = useState({ 
@@ -9,66 +9,68 @@ const Register = () => {
     username: '', 
     email: '', 
     password: '', 
-    password2: '',
-    profileImage: null,
-  })
-
-  const { firstName, username, email, password, password2, profileImage } = formData
+    password2: '', 
+    profileImage: null, // Nuevo campo para la imagen de perfil
+    previewImageUrl: ''  // URL para mostrar la vista previa de la imagen
+  });
+  
+  const { firstName, username, email, password, password2, profileImage, previewImageUrl } = formData;
   const dispatch = useDispatch();
-  const { isSuccess, message, isError } = useSelector((state) => state.auth)
-
+  const { isSuccess, message, isError } = useSelector((state) => state.auth);
+  
   useEffect(() => {
     if (isSuccess) {
       notification.success({
         message: 'Success',
         description: message,
-      })
+      });
     }
     if (isError) {
-      notification.error({ message: 'Error', description: message })
+      notification.error({ message: 'Error', description: message });
     }
-
     return () => {
-      dispatch(reset())
-    }
-  }, [isSuccess, isError, message, dispatch])
+      dispatch(reset());
+    };
+  }, [isSuccess, isError, message, dispatch]);
 
   const onChange = (e) => {
-    const { name, value, files } = e.target
-    if (name === 'profileImage') {
-      setFormData((prevState) => ({ ...prevState, profileImage: files[0] }))
-    } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }))
-    }
-  }
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
 
-  const onSubmit = async (e) => {
-    e.preventDefault()
-  
+  const handleImageChange = (info) => {
+    if (info.fileList && info.fileList.length > 0) {
+      const file = info.fileList[0].originFileObj;
+      setFormData({
+        ...formData,
+        profileImage: file,
+        previewImageUrl: URL.createObjectURL(file),
+      });
+    }
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
     if (password !== password2) {
       return notification.error({
         message: 'Error',
         description: 'Passwords do not match',
-      })
+      });
     } else if (!firstName || !username || !email || !password || !password2) {
       return notification.error({
         message: 'Error',
         description: 'All fields are required',
-      })
+      });
     } else {
-      const formData = new FormData()
-      formData.append('firstName', firstName)
-      formData.append('username', username)
-      formData.append('email', email)
-      formData.append('password', password)
-      formData.append('password2', password2)
-      if (profileImage) {
-        formData.append('profileImage', profileImage)
-      }
-  
-      dispatch(register(formData))
+      const updatedData = new FormData();
+      updatedData.append('firstName', firstName);
+      updatedData.append('username', username);
+      updatedData.append('email', email);
+      updatedData.append('password', password);
+      updatedData.append('profileImage', profileImage); // Agrega la imagen de perfil a la solicitud
+      return dispatch(register(updatedData)); // Envía `updatedData` en lugar de `formData`
     }
-  }
+  };
 
   const clearForm = () => {
     setFormData({
@@ -78,11 +80,26 @@ const Register = () => {
       password: '',
       password2: '',
       profileImage: null,
-    })
-  }
+      previewImageUrl: ''
+    });
+  };
 
   return (
     <form onSubmit={onSubmit}>
+      <Upload
+        name="profileImage"
+        beforeUpload={() => false}
+        onChange={handleImageChange}
+        showUploadList={false}
+      >
+        <div style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Avatar
+            src={previewImageUrl || 'default-avatar.png'} // Ruta a una imagen por defecto
+            size={128}
+          />
+          <span style={{ marginTop: '5px', color: '#1890ff' }}>Seleccionar Imagen</span>
+        </div>
+      </Upload>
       <input
         type="text"
         name="firstName"
@@ -90,7 +107,6 @@ const Register = () => {
         onChange={onChange}
         placeholder="Nombre"
         required
-        autoComplete='off'
       />
       <input
         type="text"
@@ -99,7 +115,6 @@ const Register = () => {
         onChange={onChange}
         placeholder="Nombre de usuario"
         required
-        autoComplete='off'
       />
       <input
         type="email"
@@ -108,7 +123,6 @@ const Register = () => {
         onChange={onChange}
         placeholder="Email"
         required
-        autoComplete='off'
       />
       <input
         type="password"
@@ -117,7 +131,6 @@ const Register = () => {
         onChange={onChange}
         placeholder="Contraseña"
         required
-        autoComplete='off'
       />
       <input
         type="password"
@@ -126,19 +139,13 @@ const Register = () => {
         onChange={onChange}
         placeholder="Confirma la contraseña"
         required
-        autoComplete='off'
-      />
-      <input
-        type="file"
-        name="profileImage"
-        onChange={onChange}
       />
       <div>
         <button type="submit">Registrar</button>
         <button type="button" onClick={clearForm}>Limpiar Formulario</button>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

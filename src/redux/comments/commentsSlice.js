@@ -19,7 +19,20 @@ export const createComment = createAsyncThunk('comments/create', async (commentD
   }
 });
 
-// Action para likeComment
+export const updateComment = createAsyncThunk(
+  'comments/updateComment',
+  async ({ commentId, updatedData }) => {
+    return await commentsService.updateComment(commentId, updatedData);
+  }
+);
+
+export const deleteComment = createAsyncThunk(
+  'comments/deleteComment',
+  async (commentId) => {
+    return await commentsService.deleteComment(commentId);
+  }
+);
+
 export const likeComment = createAsyncThunk('comments/like', async (commentId, thunkAPI) => {
   try {
     return await commentsService.likeComment(commentId);
@@ -29,7 +42,6 @@ export const likeComment = createAsyncThunk('comments/like', async (commentId, t
   }
 });
 
-// Action para unlikeComment
 export const unlikeComment = createAsyncThunk('comments/unlike', async (commentId, thunkAPI) => {
   try {
     return await commentsService.unlikeComment(commentId);
@@ -55,18 +67,28 @@ const commentsSlice = createSlice({
       .addCase(createComment.fulfilled, (state, action) => {
         state.comments.push(action.payload);
       })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.comments = state.comments.filter(comment => comment._id !== action.payload);
+      })
+      .addCase(updateComment.fulfilled, (state, action) => {
+        const updatedComment = action.payload;
+        const index = state.comments.findIndex(comment => comment._id === updatedComment._id);
+        if (index !== -1) {
+          state.comments[index] = updatedComment;
+        }
+      })
       .addCase(likeComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
         const index = state.comments.findIndex(comment => comment._id === updatedComment._id);
         if (index !== -1) {
-          state.comments[index] = updatedComment; // Actualiza el comentario en el estado
+          state.comments[index] = updatedComment;
         }
       })
       .addCase(unlikeComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
         const index = state.comments.findIndex(comment => comment._id === updatedComment._id);
         if (index !== -1) {
-          state.comments[index] = updatedComment; // Actualiza el comentario en el estado
+          state.comments[index] = updatedComment;
         }
       });
   },
