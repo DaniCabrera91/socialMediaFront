@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register, reset } from '../../redux/auth/authSlice';
 import { notification, Upload, Avatar } from 'antd';
+import './Register.styled.scss'
 
 const Register = () => {
   const [formData, setFormData] = useState({ 
@@ -92,12 +93,12 @@ const Register = () => {
         onChange={handleImageChange}
         showUploadList={false}
       >
-        <div style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div>
           <Avatar
             src={previewImageUrl || 'default-avatar.png'} // Ruta a una imagen por defecto
             size={128}
           />
-          <span style={{ marginTop: '5px', color: '#1890ff' }}>Seleccionar Imagen</span>
+          <span>Seleccionar Imagen</span>
         </div>
       </Upload>
       <input

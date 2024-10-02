@@ -37,7 +37,11 @@
         background-color: var(--hover-color);
       }
     }
-  
+    
+    .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+        color: var(--text-color);
+    }
+
     .profile-info {
       display: flex;
       flex-direction: column;

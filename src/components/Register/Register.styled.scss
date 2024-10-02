@@ -1,0 +1,78 @@
+@import '../../assets/styles/mixins';
+@import '../../assets/styles/variables';
+@import '../../assets/styles/themes';
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 50%;
+  margin: 2rem auto;
+  background-color: var(--background-color);
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--hover-color);
+  border-radius: $border-radius;
+
+  input {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--hover-color);
+    border-radius: $border-radius;
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+
+    &:focus {
+      border-color: var(--hover-color);
+      box-shadow: 0 0 5px var(--hover-color);
+      outline: none;
+    }
+  }
+
+  .ant-upload .ant-avatar {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+  button {
+    padding: 0.75rem 2rem;
+    margin: 1rem 0;
+    border: none;
+    border-radius: $border-radius;
+    background-color: var(--header-background-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      background-color: var(--hover-color);
+    }
+
+    &:first-child {
+      margin-right: 1rem;
+    }
+  }
+
+  .ant-upload {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .ant-avatar {
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      color: var(--hover-color);
+      cursor: pointer;
+      font-size: 0.9rem;
+
+      &:hover {
+        color: var(--text-color);
+      }
+    }
+  }
+}

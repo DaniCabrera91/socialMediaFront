@@ -13,6 +13,7 @@
     /* Estilos para la tarjeta del post */
     .post-card {
       background-color: var(--background-color);
+      border-color: var(--hover-color);
     }
   
     .post-image {
@@ -44,6 +45,7 @@
   
       .comment-input {
         background-color: var(--background-color);
+        border-color: var(--hover-color);
         color: var(--text-color);
       }
   
