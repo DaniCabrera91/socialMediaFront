@@ -25,14 +25,15 @@ function TheFooter() {
     <footer className="footer">
       <div className="footer-content">
         <a
-          href="https://github.com/tu_usuario"
+          href="https://github.com/DaniCabrera91"
           target="_blank"
           rel="noopener noreferrer"
           className="github-link"
         >
-          <GithubOutlined style={{ fontSize: '24px', color: '#333' }} />
+          <GithubOutlined/>
+        
+        <p>© 2024 @DaniCabrera91. Todos los derechos reservados.</p>
         </a>
-        <p>© 2024 Tu Nombre. Todos los derechos reservados.</p>
       </div>
 
       {visible && (
@@ -40,7 +41,7 @@ function TheFooter() {
           <Button 
             type="primary" 
             shape="circle" 
-            icon={<span style={{ fontSize: '16px' }}>↑</span>} 
+            icon={<span>↑</span>} 
             size="large" 
             onClick={scrollToTop}
           />

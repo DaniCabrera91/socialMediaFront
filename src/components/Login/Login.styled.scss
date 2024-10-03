@@ -3,7 +3,7 @@
 @import '../../assets/styles/themes';
 
 .login-container {
-  max-width: 400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   background-color: var(--background-color);
@@ -33,7 +33,7 @@
       input {
         width: 100%;
         padding: $spacing-md;
-        border: 1px solid var(--text-color);
+        border: 1px solid var(--hover-color);
         border-radius: $border-radius;
         background-color: var(--background-color);
         color: var(--text-color);

@@ -93,7 +93,7 @@ const PostCreate = ({ onClose }) => {
         </button>
       </form>
       {errorMessage && <p className="modal-error">{errorMessage}</p>}
-      <button onClick={onClose} className="modal-close-button">Cerrar</button> {/* Botón para cerrar el modal */}
+      <button onClick={onClose} className="modal-close-button">Cerrar</button>
     </div>
   );
 };
