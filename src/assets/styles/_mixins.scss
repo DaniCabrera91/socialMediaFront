@@ -1,20 +1,13 @@
-//_mixins.scss
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+@import './breakpoints';
+@import './variables';
 
-@mixin flex-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-@mixin breakpoint($point) {
-  @if $point == 'mobile' {
-    @media (max-width: $mobile) {
-      @content;
-    }
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'mobile' {
+    @media (max-width: $mobile) { @content; }
+  } @else if $breakpoint == 'tablet' {
+    @media (max-width: $tablet) { @content; }
+  } @else if $breakpoint == 'desktop' {
+    @media (max-width: $desktop) { @content; }
   }
 }

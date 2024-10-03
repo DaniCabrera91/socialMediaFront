@@ -6,7 +6,7 @@
 @import './assets/styles/base';
 @import './assets/styles/themes';
 
-.app-container{
+.app-container {
     width: 70%;
     height: 100vh;
     display: flex;
@@ -14,10 +14,24 @@
     flex-wrap: nowrap;
     align-content: space-around;
     align-items: center;
-}  
-
-.main-content{
-    width:125%;
-    margin-left: 60%;    
-}
   
+    @include respond-to('mobile') {
+      width: 100%;
+      padding: 0 1rem;
+    }
+  }
+  
+  .main-content {
+    width: 125%;
+    margin-left: 60%;
+  
+    @include respond-to('tablet') {
+      width: 80%;
+      margin-left: 20%;
+    }
+  
+    @include respond-to('mobile') {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
