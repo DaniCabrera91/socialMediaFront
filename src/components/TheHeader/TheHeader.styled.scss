@@ -2,13 +2,12 @@
 @import '../../assets/styles/themes';
 @import '../../assets/styles/mixins';
 
-
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
   height: 100%;
-  width: 8rem; // Ancho del sidebar cuando está colapsado
+  width: 8rem;
   background-color: var(--header-background-color);
   transition: width 0.3s ease;
   display: flex;
@@ -24,6 +23,7 @@
 
   &:hover {
     width: 12rem;
+    padding-right: 5rem;
   }
 
   @include respond-to('mobile') {
@@ -42,9 +42,11 @@
       color: var(--text-color);
       text-align: center;
       text-transform: uppercase;
-      opacity: 1;
+      opacity: 0;
+      visibility: hidden;
       white-space: nowrap;
       overflow: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
   }
 
@@ -90,23 +92,29 @@
         margin: 1rem;
         padding-left: 2rem;
         color: var(--text-color);
+        transition: color 0.3s ease;
       }
 
       .text {
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease, color 0.3s ease;
+        white-space: nowrap;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
       }
 
       &:hover {
         color: var(--hover-color);
 
+
         .text {
+          opacity: 1;
+          visibility: visible;
           color: var(--hover-color);
         }
 
         .icon {
           color: var(--hover-color);
+
         }
       }
     }
@@ -126,7 +134,7 @@
 
       .sidebar-menu button .text,
       .sidebar-menu a .text {
-        padding-right: 5rem;
+        justify-content: left;
         opacity: 1;
         visibility: visible;
         color: var(--text-color);
@@ -148,7 +156,6 @@
     }
   }
 
-  // Botón para abrir/cerrar menú en móviles
   .menu-toggle {
     display: none;
 
